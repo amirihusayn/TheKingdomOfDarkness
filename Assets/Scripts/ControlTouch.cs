@@ -4,78 +4,102 @@ using System.Linq;
 using UnityEngine;
 
 public class ControlTouch : MonoBehaviour {
+    // Fields
 	private GameObject clickedElement, draggedElement;
     [SerializeField] private GameObject plane;
 	[SerializeField] private LayerMask elementMask;
     Vector3 startPosition, endPosition, sideDirection;
+    bool isClicked, isDraging, isClickReleased;
 
-    private GameObject DraggedElement
-    {
-        get { return draggedElement; }
-        set {
-            // reset privious dragged element or set animation trigger to idle
-            if(draggedElement != null)
-                draggedElement.GetComponent<MeshRenderer>().material.color = Color.white;
-            draggedElement = value;
-            // colorize it or set animation trigger
-            if(draggedElement != null)
-                draggedElement.GetComponent<MeshRenderer>().material.color = Color.red;
-        }
-    }
-
-    private GameObject ClickedElement
+    // Properties
+    public GameObject ClickedElement
     {
         get { return clickedElement; }
-        set {
-            // reset privious dragged element or set animation trigger to idle
+        private set {
+            GroundElement groundElementComponent;
+            // deselect privious ground element
             if(clickedElement != null)
-                clickedElement.GetComponent<MeshRenderer>().material.color = Color.white;
+            {
+                groundElementComponent = clickedElement.GetComponent<GroundElement>();
+                if(groundElementComponent != null)
+                    groundElementComponent.OnDeselect();
+            }
             clickedElement = value;
-            // colorize it or set animation trigger
+            // select current ground element
             if(clickedElement != null)
-                clickedElement.GetComponent<MeshRenderer>().material.color = Color.green;
+            {
+                groundElementComponent = clickedElement.GetComponent<GroundElement>();
+                if(groundElementComponent != null)
+                    groundElementComponent.OnSelect();
+            }
         }
     }
 
-    // Use this for initialization
+    public GameObject DraggedElement
+    {
+        get { return draggedElement; }
+        private set {
+            GroundElement groundElementComponent;
+            // deselect privious dragged ground element
+            if(draggedElement != null)
+            {
+                groundElementComponent = draggedElement.GetComponent<GroundElement>();
+                if(groundElementComponent != null)
+                    groundElementComponent.OnDragLeft();
+            }
+            draggedElement = value;
+            // select current ground element
+            if(draggedElement != null)
+            {
+                groundElementComponent = draggedElement.GetComponent<GroundElement>();
+                if(groundElementComponent != null)
+                    groundElementComponent.OnDrag();
+            }
+        }
+    }
+
+    // Methods
     void Start () {
         startPosition = Vector3.zero;
         endPosition = Vector3.zero;
 	}
-	
-	// Update is called once per frame
+
 	void Update () {
+        isClicked = Input.GetKeyDown(KeyCode.Mouse0);
+        isDraging = Input.GetKey(KeyCode.Mouse0);
+        isClickReleased = Input.GetKeyUp(KeyCode.Mouse0);
 	}
 
 	void FixedUpdate() {
-        if(Input.GetKeyDown(KeyCode.Mouse0))
-            TouchElement();
-
-        if(Input.GetKey(KeyCode.Mouse0))
+        if(isClicked)
+            ClickElement();
+        if(isDraging)
             DragElement();
-        
-        if(Input.GetKeyUp(KeyCode.Mouse0))
-        {
-            ClickedElement = null;
-            if(draggedElement != null)
-                draggedElement.GetComponent<MeshRenderer>().material.color = Color.white;
-            draggedElement = null;
-        }
+        if(isClickReleased)
+            MoveElement();
     }
 
-    private void TouchElement()
+    void ClickElement()
     {
         RaycastHit hit;
 		Ray ray;
         ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         if(Physics.Raycast(ray, out hit, elementMask))
-        {
-            startPosition = hit.transform.position;
-            ClickedElement = hit.transform.gameObject;
-        }
+            if(hit.transform.GetComponent<GroundElement>() != null)
+            {
+                ClickedElement = hit.transform.gameObject;
+                startPosition = hit.transform.position;
+            }
+            else if(hit.transform.GetComponentInParent<GroundElement>() != null)
+            {
+                ClickedElement = hit.transform.parent.gameObject;
+                startPosition = ClickedElement.transform.position;
+            }
+            else
+                startPosition = Vector3.zero;
     }
 
-    private void DragElement()
+    void DragElement()
     {
         RaycastHit hit;
 		Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
@@ -83,9 +107,27 @@ public class ControlTouch : MonoBehaviour {
             endPosition = hit.point;
 
         sideDirection = endPosition - startPosition;
-        if(clickedElement != plane)
-            if(Physics.Raycast(startPosition, sideDirection, out hit, sideDirection.magnitude, elementMask))
+        if(ClickedElement != plane && ClickedElement != null)
+            if(Physics.Raycast(startPosition, sideDirection, out hit, 1.5f, elementMask))
                 DraggedElement = hit.transform.gameObject;
         Debug.DrawRay(startPosition, sideDirection, Color.red);
+    }
+
+    void MoveElement()
+    {
+        GroundElement groundElementComponent;
+        if(DraggedElement != null && ClickedElement != null)
+        {
+            groundElementComponent = ClickedElement.GetComponent<GroundElement>();
+            if(groundElementComponent != null)
+                groundElementComponent.OnMove(DraggedElement);
+        }
+        ClearElements();
+    }
+
+    void ClearElements()
+    {
+        ClickedElement = null;
+        DraggedElement = null;
     }
 }
