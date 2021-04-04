@@ -1,9 +1,7 @@
-using UnityEngine;
-
 public class ManPiece : PiecePrototype
 {
-    public override int NumberOfMoves { get {return 1;} }
-    public override int NumberOfLives { get {return 1;} set {} }
+    public override int NumberOfMoves { get { return 1; } }
+    public override int NumberOfLives { get { return 1; } set { } }
 
 
     public override void OnSelect(PieceElement piece)

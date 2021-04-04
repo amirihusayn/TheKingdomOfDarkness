@@ -1,8 +1,7 @@
-using UnityEngine;
-
-public class WomanPiece : PiecePrototype {
-    public override int NumberOfMoves { get {return 1;} }
-    public override int NumberOfLives { get {return 1;} set {} }
+public class WomanPiece : PiecePrototype
+{
+    public override int NumberOfMoves { get { return 1; } }
+    public override int NumberOfLives { get { return 1; } set { } }
 
 
     public override void OnSelect(PieceElement piece)

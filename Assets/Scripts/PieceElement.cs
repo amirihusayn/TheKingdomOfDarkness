@@ -1,48 +1,87 @@
 ﻿using UnityEngine;
 
-public class PieceElement : MonoBehaviour {
-	private static int colorIndex = 0;
+public class PieceElement : MonoBehaviour
+{
+    // Fields
+    private static int colorIndex = 0;
     private PiecePrototype pieceCore;
-	[SerializeField] private Animator animator;
+    private Vector3 initialPosition;
+    private GroundElement loacationElement;
+    [SerializeField] private Animator animator;
 
-	private void Start() {
-		int playerNumber = colorIndex + 1;
-		pieceCore = new ManPiece();
-		gameObject.GetComponentInChildren<SkinnedMeshRenderer>().material.color = GameControl.Instance.Colors[colorIndex];
-		gameObject.GetComponentInChildren<TextMesh>().text = "P" + colorIndex;
-		colorIndex++;
-	}
+    // Properties
+    public Vector3 InitialPosition { get { return initialPosition; } }
 
-	public void OnSelect()
-	{
-		// pieceCore.OnSelect(this);
-	}
+    public GroundElement LoacationElement
+    {
+        get { return loacationElement; }
+        private set { loacationElement = value; }
+    }
 
-	public void OnDeselect()
-	{
-		// pieceCore.OnDeselect(this);
-	}
+    private void Start()
+    {
+        SetColorAndPlayerNumber();
+        initialPosition = transform.position;
+    }
 
-	public void OnDrag()
-	{
-		animator.SetBool("isWalking", true);
-		// pieceCore.OnDrag(this);	
-	}
+    private void SetColorAndPlayerNumber()
+    {
+        int playerNumber = colorIndex + 1;
+        pieceCore = new ManPiece();
+        gameObject.GetComponentInChildren<SkinnedMeshRenderer>().material.color = GameControl.Instance.Colors[colorIndex];
+        gameObject.GetComponentInChildren<TextMesh>().text = "P" + colorIndex;
+        colorIndex++;
+    }
 
-	public void OnDragLeft()
-	{
-		animator.SetBool("isWalking", false);
-		// pieceCore.OnDragLeft(this);	
-	}
+    void OnTriggerEnter(Collider other)
+    {
+        GroundElement enterdLocation = other.GetComponent<GroundElement>();
+        if (enterdLocation == null)
+            return;
+        enterdLocation.PieceElement = this;
+        LoacationElement = enterdLocation;
+    }
 
-	public void OnMove()
-	{
-		// animator.SetTrigger("OnJump");
-		// pieceCore.OnMove(this);
-	}
+    void OnTriggerExit(Collider other)
+    {
+        GroundElement exitedLocation = other.GetComponent<GroundElement>();
+        if (exitedLocation == null)
+            return;
+        exitedLocation.PieceElement = null;
+        LoacationElement = null;
+    }
 
-	public void OnDeath()
-	{
-		gameObject.SetActive(false);
-	}
+    public void OnSelect()
+    {
+        animator.SetBool("isWalking", true);
+        // pieceCore.OnSelect(this);
+    }
+
+    public void OnDeselect()
+    {
+        animator.SetBool("isWalking", false);
+        // pieceCore.OnDeselect(this);
+    }
+
+    public void OnDrag()
+    {
+        // pieceCore.OnDrag(this);	
+    }
+
+    public void OnDragLeft()
+    {
+        // pieceCore.OnDragLeft(this);	
+    }
+
+    public void OnMove()
+    {
+        // animator.SetTrigger("OnJump");
+        // pieceCore.OnMove(this);
+    }
+
+    public void OnDeath()
+    {
+        gameObject.SetActive(false);
+        loacationElement.PieceElement = null;
+    }
 }

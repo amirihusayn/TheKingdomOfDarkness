@@ -4,8 +4,9 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class GameControl : singleton<GameControl> {
-    [SerializeField] private Color [] colors;
+public class GameControl : singleton<GameControl>
+{
+    [SerializeField] private Color[] colors;
     [SerializeField] private Text messageText;
     [SerializeField] private GameObject nextWaveButton;
     [SerializeField] private List<GameObject> pieceList;
@@ -22,7 +23,8 @@ public class GameControl : singleton<GameControl> {
         }
     }
 
-    protected override void Awake() {
+    protected override void Awake()
+    {
         base.Awake();
         grounds = new List<GameObject>(GameObject.FindGameObjectsWithTag("Ground"));
     }
@@ -53,18 +55,18 @@ public class GameControl : singleton<GameControl> {
 
     public void NextWave()
     {
-        if(!isFinished)
+        if (!isFinished)
         {
             int randomIndex;
             PieceElement thisPiece;
-            for(int index = 0; index < 4; index ++)
+            for (int index = 0; index < 4; index++)
             {
-                randomIndex = random.Next(0,grounds.Count);
+                randomIndex = random.Next(0, grounds.Count);
                 deathParticlesList[index].transform.position = grounds[randomIndex].transform.position;
                 deathParticlesList[index].SetActive(true);
                 deathParticlesList[index].GetComponent<ParticleSystem>().Play();
-                thisPiece = grounds[randomIndex].GetComponentInChildren<PieceElement>();
-                if(thisPiece != null)
+                thisPiece = grounds[randomIndex].GetComponent<GroundElement>().PieceElement;
+                if (thisPiece != null)
                     thisPiece.OnDeath();
             }
         }
@@ -77,6 +79,9 @@ public class GameControl : singleton<GameControl> {
         nextWaveButton.SetActive(true);
         messageText.text = "Move and head to the wave !";
         foreach (GameObject thisPiece in pieceList)
+        {
+            thisPiece.transform.position = thisPiece.GetComponent<PieceElement>().InitialPosition;
             thisPiece.SetActive(true);
+        }
     }
 }
