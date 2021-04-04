@@ -34,12 +34,12 @@ public class GameControl : singleton<GameControl>
         int availables = 0;
         string playerNumber = "";
         foreach (GameObject thisPiece in pieceList)
-            if (thisPiece.active)
+            if (thisPiece.activeSelf)
                 availables++;
         if (availables == 1)
         {
             foreach (GameObject thisPiece in pieceList)
-                if (thisPiece.active)
+                if (thisPiece.activeSelf)
                     playerNumber = thisPiece.GetComponentInChildren<TextMesh>().text;
             messageText.text = playerNumber + " Won !";
             isFinished = true;

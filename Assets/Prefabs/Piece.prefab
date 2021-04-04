@@ -67,8 +67,8 @@ GameObject:
   m_Component:
   - component: {fileID: 4820056545889428}
   - component: {fileID: 54550338980863908}
-  - component: {fileID: 136909746538205062}
   - component: {fileID: 114866559716621404}
+  - component: {fileID: 65024473279411290}
   m_Layer: 9
   m_Name: Piece
   m_TagString: Untagged
@@ -286,15 +286,15 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1494526042894264}
-  m_LocalRotation: {x: -0, y: 0.9396927, z: -0, w: -0.3420201}
-  m_LocalPosition: {x: 2.25, y: 0.2, z: 1.5}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -2.25, y: 0.2, z: -1.5}
   m_LocalScale: {x: 0.50000024, y: 0.5, z: 0.50000024}
   m_Children:
   - {fileID: 4001644395632754}
   - {fileID: 4745025332165296}
   m_Father: {fileID: 0}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 220, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &4947498708576592
 Transform:
   m_ObjectHideFlags: 1
@@ -398,9 +398,21 @@ Rigidbody:
   m_AngularDrag: 0.05
   m_UseGravity: 0
   m_IsKinematic: 1
-  m_Interpolate: 0
-  m_Constraints: 0
+  m_Interpolate: 1
+  m_Constraints: 80
   m_CollisionDetection: 0
+--- !u!65 &65024473279411290
+BoxCollider:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1494526042894264}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1.5, y: 3.353836, z: 1.5}
+  m_Center: {x: 0, y: 1.4235559, z: 0}
 --- !u!95 &95659231716788302
 Animator:
   serializedVersion: 3
@@ -451,20 +463,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 17bf91f98b71f430eab36f523302c0cb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  loacationElement: {fileID: 0}
   animator: {fileID: 95659231716788302}
---- !u!136 &136909746538205062
-CapsuleCollider:
-  m_ObjectHideFlags: 1
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1494526042894264}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 1
-  m_Enabled: 1
-  m_Radius: 1.2
-  m_Height: 3.5
-  m_Direction: 1
-  m_Center: {x: 0, y: 1.25, z: -0}
 --- !u!137 &137109201869593124
 SkinnedMeshRenderer:
   m_ObjectHideFlags: 1

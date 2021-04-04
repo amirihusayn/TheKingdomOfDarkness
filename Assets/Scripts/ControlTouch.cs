@@ -10,8 +10,8 @@ public class ControlTouch : singleton<ControlTouch>
     private GroundElement clickedElement, draggedElement;
     [SerializeField] private GameObject plane;
     [SerializeField] private LayerMask elementMask;
-    Vector3 startPosition, endPosition, sideDirection;
-    bool isClicked, isDraging, isClickReleased;
+    private Vector3 startPosition, endPosition, sideDirection;
+    private bool isClicked, isDraging, isClickReleased;
 
     // Properties
     public GroundElement ClickedElement
@@ -48,24 +48,27 @@ public class ControlTouch : singleton<ControlTouch>
         endPosition = Vector3.zero;
     }
 
-    void Update()
+    private void Update()
     {
         isClicked = Input.GetKeyDown(KeyCode.Mouse0);
         isDraging = Input.GetKey(KeyCode.Mouse0);
         isClickReleased = Input.GetKeyUp(KeyCode.Mouse0);
     }
 
-    void FixedUpdate()
+    private void FixedUpdate()
     {
         if (isClicked)
             ClickElement();
         if (isDraging)
+        {
             DragElement();
+            RotatePiece();
+        }
         if (isClickReleased)
             MoveElement();
     }
 
-    void ClickElement()
+    private void ClickElement()
     {
         RaycastHit hit;
         Ray ray;
@@ -85,7 +88,7 @@ public class ControlTouch : singleton<ControlTouch>
                 startPosition = Vector3.zero;
     }
 
-    void DragElement()
+    private void DragElement()
     {
         RaycastHit hit;
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
@@ -105,16 +108,28 @@ public class ControlTouch : singleton<ControlTouch>
         Debug.DrawRay(startPosition, sideDirection, Color.red);
     }
 
-    void MoveElement()
+    private void RotatePiece()
+    {
+        float angle;
+        Rigidbody pieceRigidBody;
+        Vector3 direction;
+        PieceElement piece = null;
+        if(ClickedElement != null)
+            piece = ClickedElement.PieceElement;
+        if(piece != null)
+        {
+            pieceRigidBody = piece.GetComponent<Rigidbody>();
+            direction = endPosition - piece.transform.position;
+            angle = Quaternion.LookRotation(direction).eulerAngles.y;
+            pieceRigidBody.MoveRotation(Quaternion.Euler(0, angle, 0));
+        }
+    }
+
+    private void MoveElement()
     {
         if (DraggedElement != null && ClickedElement != null)
             ClickedElement.OnMove(DraggedElement);
-        ClearElements();
-    }
-
-    void ClearElements()
-    {
-        ClickedElement = null;
-        DraggedElement = null;
+        ClickedElement.OnDeselect();
+        DraggedElement.OnDragLeft(); 
     }
 }

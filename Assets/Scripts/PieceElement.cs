@@ -6,7 +6,7 @@ public class PieceElement : MonoBehaviour
     private static int colorIndex = 0;
     private PiecePrototype pieceCore;
     private Vector3 initialPosition;
-    private GroundElement loacationElement;
+    [SerializeField]private GroundElement loacationElement;
     [SerializeField] private Animator animator;
 
     // Properties
