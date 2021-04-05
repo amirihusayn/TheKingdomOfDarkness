@@ -60,10 +60,7 @@ public class ControlTouch : singleton<ControlTouch>
         if (isClicked)
             ClickElement();
         if (isDraging)
-        {
             DragElement();
-            RotatePiece();
-        }
         if (isClickReleased)
             MoveElement();
     }
@@ -74,21 +71,39 @@ public class ControlTouch : singleton<ControlTouch>
         Ray ray;
         ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         if (Physics.Raycast(ray, out hit, elementMask))
-            if (hit.transform.GetComponent<GroundElement>() != null)
-            {
-                ClickedElement = hit.transform.GetComponent<GroundElement>();
-                startPosition = hit.transform.position;
-            }
-            else if (hit.transform.GetComponent<PieceElement>() != null)
-            {
-                ClickedElement = hit.transform.GetComponent<PieceElement>().LoacationElement;
-                startPosition = ClickedElement.transform.position;
-            }
-            else
-                startPosition = Vector3.zero;
+            SetClickedElementAndStartPosition(hit);
+    }
+
+    private void SetClickedElementAndStartPosition(RaycastHit hit)
+    {
+        if (hit.transform.GetComponent<GroundElement>() != null)
+        {
+            ClickedElement = hit.transform.GetComponent<GroundElement>();
+            startPosition = hit.transform.position;
+        }
+        else if (hit.transform.GetComponent<PieceElement>() != null)
+        {
+            ClickedElement = hit.transform.GetComponent<PieceElement>().LoacationElement;
+            startPosition = ClickedElement.transform.position;
+        }
+        else
+            startPosition = Vector3.zero;
     }
 
     private void DragElement()
+    {
+        SetEndPosition();
+        sideDirection = endPosition - startPosition;
+        if (ClickedElement != null)
+        {
+            if (ClickedElement.PieceElement != null)
+                ClickedElement.PieceElement.RotatePiece(endPosition);
+            SetDraggedElement();
+        }
+        Debug.DrawRay(startPosition, sideDirection, Color.red);
+    }
+
+    private void SetEndPosition()
     {
         RaycastHit hit;
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
@@ -99,37 +114,24 @@ public class ControlTouch : singleton<ControlTouch>
                 endPosition = hit.transform.GetComponent<PieceElement>().LoacationElement.transform.position;
             else
                 endPosition = hit.point;
-
-        sideDirection = endPosition - startPosition;
-        if (ClickedElement != null)
-            if (Physics.Raycast(startPosition, sideDirection, out hit, 2f, elementMask))
-                if (hit.transform.GetComponent<GroundElement>() != null)
-                    DraggedElement = hit.transform.GetComponent<GroundElement>();
-        Debug.DrawRay(startPosition, sideDirection, Color.red);
     }
 
-    private void RotatePiece()
+    private void SetDraggedElement()
     {
-        float angle;
-        Rigidbody pieceRigidBody;
-        Vector3 direction;
-        PieceElement piece = null;
-        if(ClickedElement != null)
-            piece = ClickedElement.PieceElement;
-        if(piece != null)
-        {
-            pieceRigidBody = piece.GetComponent<Rigidbody>();
-            direction = endPosition - piece.transform.position;
-            angle = Quaternion.LookRotation(direction).eulerAngles.y;
-            pieceRigidBody.MoveRotation(Quaternion.Euler(0, angle, 0));
-        }
+        RaycastHit hit;
+        if (Physics.Raycast(startPosition, sideDirection, out hit, 2f, elementMask))
+            if (hit.transform.GetComponent<GroundElement>() != null)
+                DraggedElement = hit.transform.GetComponent<GroundElement>();
     }
 
     private void MoveElement()
     {
         if (DraggedElement != null && ClickedElement != null)
+        {
             ClickedElement.OnMove(DraggedElement);
-        ClickedElement.OnDeselect();
-        DraggedElement.OnDragLeft(); 
+            ClickedElement.OnDeselect();
+            DraggedElement.OnDragLeft(); 
+            ClickedElement = null;
+        }
     }
 }

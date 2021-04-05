@@ -273,9 +273,9 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1075542571091230}
-  m_LocalRotation: {x: -0, y: -0.9396927, z: -0, w: -0.3420201}
-  m_LocalPosition: {x: 0.17, y: 3.72, z: -0.09}
-  m_LocalScale: {x: 0.1, y: 0.1, z: 0.1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 2.87, z: 0}
+  m_LocalScale: {x: 0.03, y: 0.03, z: 0.03}
   m_Children: []
   m_Father: {fileID: 4820056545889428}
   m_RootOrder: 1
@@ -286,9 +286,9 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1494526042894264}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -2.25, y: 0.2, z: -1.5}
-  m_LocalScale: {x: 0.50000024, y: 0.5, z: 0.50000024}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -2.25, y: 0, z: 1.5}
+  m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
   m_Children:
   - {fileID: 4001644395632754}
   - {fileID: 4745025332165296}
@@ -411,8 +411,8 @@ BoxCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 1.5, y: 3.353836, z: 1.5}
-  m_Center: {x: 0, y: 1.4235559, z: 0}
+  m_Size: {x: 1.5, y: 2.6262977, z: 1.5}
+  m_Center: {x: 0, y: 1.0597867, z: 0}
 --- !u!95 &95659231716788302
 Animator:
   serializedVersion: 3
@@ -442,8 +442,8 @@ TextMesh:
   m_OffsetZ: 0
   m_CharacterSize: 1
   m_LineSpacing: 1
-  m_Anchor: 0
-  m_Alignment: 0
+  m_Anchor: 4
+  m_Alignment: 1
   m_TabSize: 4
   m_FontSize: 127
   m_FontStyle: 1
@@ -463,7 +463,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 17bf91f98b71f430eab36f523302c0cb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  poseAngle: 140
   loacationElement: {fileID: 0}
+  rigidBody: {fileID: 54550338980863908}
+  playerNumberText: {fileID: 102592754325667484}
   animator: {fileID: 95659231716788302}
 --- !u!137 &137109201869593124
 SkinnedMeshRenderer:

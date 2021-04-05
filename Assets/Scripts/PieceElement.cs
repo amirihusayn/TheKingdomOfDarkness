@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using UnityEngine;
 
 public class PieceElement : MonoBehaviour
 {
@@ -6,7 +7,10 @@ public class PieceElement : MonoBehaviour
     private static int colorIndex = 0;
     private PiecePrototype pieceCore;
     private Vector3 initialPosition;
-    [SerializeField]private GroundElement loacationElement;
+    [SerializeField, Range(-180, 180)] private float poseAngle;
+    [SerializeField] private GroundElement loacationElement;
+    [SerializeField] private Rigidbody rigidBody;
+    [SerializeField] private TextMesh playerNumberText;
     [SerializeField] private Animator animator;
 
     // Properties
@@ -20,20 +24,22 @@ public class PieceElement : MonoBehaviour
 
     private void Start()
     {
-        SetColorAndPlayerNumber();
-        initialPosition = transform.position;
+        Initialization();
+        StopCoroutine("SoftRotate");
+        StartCoroutine("SoftRotate");
     }
 
-    private void SetColorAndPlayerNumber()
+    private void Initialization()
     {
         int playerNumber = colorIndex + 1;
         pieceCore = new ManPiece();
-        gameObject.GetComponentInChildren<SkinnedMeshRenderer>().material.color = GameControl.Instance.Colors[colorIndex];
-        gameObject.GetComponentInChildren<TextMesh>().text = "P" + colorIndex;
+        initialPosition = transform.position;
+        GetComponentInChildren<SkinnedMeshRenderer>().material.color = GameControl.Instance.Colors[colorIndex];
+        playerNumberText.text = "P" + playerNumber;
         colorIndex++;
     }
 
-    void OnTriggerEnter(Collider other)
+    private void OnTriggerEnter(Collider other)
     {
         GroundElement enterdLocation = other.GetComponent<GroundElement>();
         if (enterdLocation == null)
@@ -42,13 +48,41 @@ public class PieceElement : MonoBehaviour
         LoacationElement = enterdLocation;
     }
 
-    void OnTriggerExit(Collider other)
+    private void OnTriggerExit(Collider other)
     {
         GroundElement exitedLocation = other.GetComponent<GroundElement>();
         if (exitedLocation == null)
             return;
         exitedLocation.PieceElement = null;
         LoacationElement = null;
+    }
+
+    public void RotatePiece(Vector3 endDragPosition)
+    {
+        float angle;
+        Vector3 direction;
+        direction = endDragPosition - transform.position;
+        angle = Quaternion.LookRotation(direction).eulerAngles.y;
+        rigidBody.MoveRotation(Quaternion.Euler(0, angle, 0));
+        playerNumberText.transform.rotation = Quaternion.Euler(0, 0, 0);
+        playerNumberText.transform.localRotation = Quaternion.Euler(0, 0, 0);
+    }
+
+    private void RotatePiece(float angle)
+    {
+        rigidBody.MoveRotation(Quaternion.Euler(0, angle, 0));
+        playerNumberText.transform.rotation = Quaternion.Euler(0, 0, 0);
+    }
+
+    private IEnumerator SoftRotate()
+    {
+        float currentAngle;
+        while(rigidBody.rotation.eulerAngles.y != poseAngle)
+        {
+            currentAngle = Vector3.Lerp(rigidBody.rotation.eulerAngles, new Vector3(0, poseAngle, 0), 0.1f).y;
+            RotatePiece(currentAngle);
+            yield return null;
+        }
     }
 
     public void OnSelect()
@@ -77,6 +111,8 @@ public class PieceElement : MonoBehaviour
     {
         // animator.SetTrigger("OnJump");
         // pieceCore.OnMove(this);
+        StopCoroutine("SoftRotate");
+        StartCoroutine("SoftRotate");
     }
 
     public void OnDeath()
