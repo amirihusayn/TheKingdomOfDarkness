@@ -129,9 +129,8 @@ public class ControlTouch : singleton<ControlTouch>
         if (DraggedElement != null && ClickedElement != null)
         {
             ClickedElement.OnMove(DraggedElement);
-            ClickedElement.OnDeselect();
-            DraggedElement.OnDragLeft(); 
             ClickedElement = null;
+            DraggedElement = null;
         }
     }
 }

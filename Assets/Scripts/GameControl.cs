@@ -77,7 +77,7 @@ public class GameControl : singleton<GameControl>
     {
         isFinished = false;
         nextWaveButton.SetActive(true);
-        messageText.text = "Move and head to the wave !";
+        messageText.text = "Move and Survive !";
         foreach (GameObject thisPiece in pieceList)
         {
             thisPiece.transform.position = thisPiece.GetComponent<PieceElement>().InitialPosition;
